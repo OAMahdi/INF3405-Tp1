@@ -2,9 +2,11 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+
 public class Server {
 
 	private static ServerSocket listener;
+	private static ArrayList<ClientHandler> clientList;
 	
 	public static void main(String[] args) throws Exception {
 		//Keep track of the number of clients
@@ -24,13 +26,13 @@ public class Server {
 		System.out.format("The Server is running on %s:%d%n", serverAdress, serverPort);
 		
 		try {
-			//Do the thing
-			Socket clientSocket = listener.accept();
-			clientNumber++;
-			DataOutputStream output = 
-			
-			String message = input.readUTF();
-			output.writeUTF(message);
+			//Accept Clients
+			while (true) {
+				ClientHandler client = new ClientHandler(listener.accept(), clientNumber++);
+				if (client.verifyCredentials()) {
+					clientList.add(client);
+				}
+			}
 			
 		} finally {
 			listener.close();
@@ -51,27 +53,43 @@ public class Server {
 		public ClientHandler(Socket socket, int clientNumber) {
 			this.socket = socket;
 			this.clientNumber = clientNumber;
-			this.inputStream = new DataInputStream(socket.getInputStream());
-			this.outputStream = new DataOutputStream(socket.getOutputStream());
+			initializeStreams();
 			System.out.println("New connection with client#" + clientNumber + " at " + socket);
 		}
 		
+		private void initializeStreams() {
+			try {
+				this.inputStream = new DataInputStream(socket.getInputStream());
+				this.outputStream = new DataOutputStream(socket.getOutputStream());
+			} catch (IOException e) {
+				System.out.println("Could not initialize streams for client #" + clientNumber);
+			}
+		}
+		
+		private boolean verifyCredentials() {
+			//Verify Username and Password
+			return true;
+		}
+		
+		//Say a welcome message to the client
 		public void start() {
 			try {
-				DataOutputStream out = new DataOutputStream(socket.getOutputStream()); //Ce que le socket ecrit
-				out.writeUTF("Hello from server - you are client#" + clientNumber);
+				//TODO Give the client the 15 latest messages
+				outputStream.writeUTF("Hello from server - you are client#" + clientNumber);
 			} catch (IOException e) {
 				System.out.println("Error Handling client# " + clientNumber + ": " + e);
 			} finally {
-				
 				try {
 					socket.close();
 				} catch (IOException e) {
-					System.out.println("Couldn't close a socket, what's going on?");
+					System.out.println("Socket could not be closed.");
+				} finally {
+					System.out.println("Connection with client# " + clientNumber + " closed");
 				}
-				System.out.println("Connection with client# " + clientNumber + " closed");
 			}	
 		}
 	}	
+	
+	
  }
-}
+
