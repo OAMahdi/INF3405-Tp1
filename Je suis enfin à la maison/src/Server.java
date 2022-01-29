@@ -7,11 +7,12 @@ public class Server {
 
 	private static ServerSocket listener;
 	private static ArrayList<ClientHandler> clientList;
+	private static ArrayList<User> userInformation;
+	private static int clientNumber;
 	
 	public static void main(String[] args) throws Exception {
-		//Keep track of the number of clients
-		int clientNumber = 0;
-		importUsers(clientNumber++);
+		
+		importUsers();
 		//Socket information
 		String serverAdress = "192.168.2.15";
 		int serverPort = 5000;
@@ -24,6 +25,11 @@ public class Server {
 		
 		//Initial Server Message
 		System.out.format("The Server is running on %s:%d%n", serverAdress, serverPort);
+		
+		System.out.println(userInformation.size());
+		for (User x: userInformation) {
+			System.out.println("Client: "+ x.username);
+		}
 		
 		try {
 			//Accept Clients
@@ -42,24 +48,25 @@ public class Server {
 		
 	}
 	
-	private static void importUsers(int clientNumber) throws IOException, ClassNotFoundException {
-		FileOutputStream fileOutputStream =  new FileOutputStream("users.txt");
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+	private static void importUsers() throws IOException, ClassNotFoundException {
+		//Initialize streams
+		FileInputStream fileInputStream = new FileInputStream("users.txt");
+		ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 		
-		User user = new User("Jesus", "Jesus", clientNumber++);
-		User user1 = new User("admin", "password", clientNumber++);
-		User user2 = new User("Joe", "who", clientNumber++);
-		User user3 = new User("Bob", "burger", clientNumber);
+		//Import the number of users
+		int userNumber = (Integer) objectInputStream.readObject();
+		//Import Users
+		userInformation = new ArrayList<User>();
+		try {
+			for (int i=0; i<userNumber; i++) {
+				User user = (User) objectInputStream.readObject();
+				userInformation.add(user);
+			}
+		} catch (EOFException e) {
+			System.out.println("Somehow reached the end of users.txt...");
+		}
 		
-		objectOutputStream.writeObject(user);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(user1);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(user2);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(user3);
-		objectOutputStream.flush();
-		objectOutputStream.close();
+		objectInputStream.close();
 	}
 	
 	//User to store the connection information of each user
