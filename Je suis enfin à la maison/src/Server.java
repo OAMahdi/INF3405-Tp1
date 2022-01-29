@@ -11,7 +11,7 @@ public class Server {
 	public static void main(String[] args) throws Exception {
 		//Keep track of the number of clients
 		int clientNumber = 0;
-		
+		importUsers(clientNumber++);
 		//Socket information
 		String serverAdress = "192.168.2.15";
 		int serverPort = 5000;
@@ -42,12 +42,28 @@ public class Server {
 		
 	}
 	
-	private void importUsers() {
+	private static void importUsers(int clientNumber) throws IOException, ClassNotFoundException {
+		FileOutputStream fileOutputStream =  new FileOutputStream("users.txt");
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 		
+		User user = new User("Jesus", "Jesus", clientNumber++);
+		User user1 = new User("admin", "password", clientNumber++);
+		User user2 = new User("Joe", "who", clientNumber++);
+		User user3 = new User("Bob", "burger", clientNumber);
+		
+		objectOutputStream.writeObject(user);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user1);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user2);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user3);
+		objectOutputStream.flush();
+		objectOutputStream.close();
 	}
 	
 	//User to store the connection information of each user
-	private static class User {
+	private static class User implements Serializable {
 		
 		private String username;
 		private String password;
