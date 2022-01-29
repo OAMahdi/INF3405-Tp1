@@ -14,6 +14,7 @@ public class Server {
 	public static void main(String[] args) throws Exception {
 
 		importUsers();
+		initializeHistory();
 		// Socket information
 		String serverAdress = "192.168.2.15";
 		int serverPort = 5000;
@@ -41,6 +42,64 @@ public class Server {
 			listener.close();
 		}
 
+	}
+	
+	private static void initializeHistory() throws Exception{
+		FileOutputStream fileOutputStream = new FileOutputStream("historic.txt");
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+		
+		Message msg = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Mama");
+		Message msg1 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "I just killed a man");
+		Message msg2 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Put a gun up to his head");
+		Message msg3 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Pulled my trigger now he's dead");
+		Message msg4 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Mama");
+		Message msg5 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Life had just begun");
+		Message msg6 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "And now I've gone and");
+		Message msg7 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Thrown it all");
+		Message msg8 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Away");
+		Message msg9 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Mama");
+		Message msg10 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Let the wind blow)");
+		Message msg11 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "I don't wanna die");
+		Message msg12 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Sometimes wish I'd never been born at all");
+		Message msg13 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Guitar Solo)");
+		Message msg14 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Guitar Solo Continues)");
+		Message msg15 = new Message("Jesus", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Yo my bad je pensais qu'on faisait ca ya 3 jours");
+		
+		objectOutputStream.writeObject(msg);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg1);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg2);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg3);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg4);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg5);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg6);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg7);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg8);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg9);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg10);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg11);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg12);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg13);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg14);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(msg15);
+		objectOutputStream.flush();
+		
+		objectOutputStream.close();
+		
 	}
 
 	private static void importUsers() throws IOException, ClassNotFoundException {
