@@ -27,6 +27,7 @@ public class Server {
 		
 		try {
 			//Accept Clients
+			clientList = new ArrayList<ClientHandler>();
 			while (true) {
 				ClientHandler client = new ClientHandler(listener.accept(), clientNumber++);
 				if (client.verifyCredentials()) {
@@ -39,6 +40,49 @@ public class Server {
 		}
 		
 		
+	}
+	
+	private void importUsers() {
+		
+	}
+	
+	//User to store the connection information of each user
+	private static class User {
+		
+		private String username;
+		private String password;
+		private int clientID;
+		
+		public User(String username, String password, int clientID) {
+			this.username = username;
+			this.password = password;
+			this.clientID = clientID;
+		}
+		
+		//Getters and setters
+		public String getPassword() {
+			return password;
+		}
+		
+		public String getUsername() {
+			return username;
+		}
+		
+		public int getClientID() {
+			return clientID;
+		}
+		
+		public void setPassword(String password) {
+			this.password = password;
+		}
+		
+		public void setUsername(String username) {
+			this.username = username;
+		}
+		
+		public void setClientID(int clientID) {
+			this.clientID = clientID;
+		}
 	}
 	
 	
