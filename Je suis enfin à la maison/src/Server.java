@@ -9,12 +9,13 @@ public class Server {
 	private static ServerSocket listener;
 	private static ArrayList<ClientHandler> clientList;
 	private static ArrayList<User> userInformation;
+	private static ArrayList<Message> messageHistory;
 	private static int clientNumber;
 
 	public static void main(String[] args) throws Exception {
 
-		importUsers();
-		initializeHistory();
+		userInformation = importData("users.txt", userInformation);
+		messageHistory = importData("historic.txt", messageHistory);
 		// Socket information
 		String serverAdress = "192.168.2.15";
 		int serverPort = 5000;
@@ -27,6 +28,13 @@ public class Server {
 
 		// Initial Server Message
 		System.out.format("The Server is running on %s:%d%n", serverAdress, serverPort);
+
+		for (User x : userInformation) {
+			System.out.println(x.username);
+		}
+		for (Message x : messageHistory) {
+			System.out.println(x);
+		}
 
 		try {
 			// Accept Clients
@@ -43,91 +51,32 @@ public class Server {
 		}
 
 	}
-	
-	private static void initializeHistory() throws Exception{
-		FileOutputStream fileOutputStream = new FileOutputStream("historic.txt");
-		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
-		
-		Message msg = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Mama");
-		Message msg1 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "I just killed a man");
-		Message msg2 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Put a gun up to his head");
-		Message msg3 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Pulled my trigger now he's dead");
-		Message msg4 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Mama");
-		Message msg5 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Life had just begun");
-		Message msg6 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "And now I've gone and");
-		Message msg7 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Thrown it all");
-		Message msg8 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Away");
-		Message msg9 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Mama");
-		Message msg10 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Let the wind blow)");
-		Message msg11 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "I don't wanna die");
-		Message msg12 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Sometimes wish I'd never been born at all");
-		Message msg13 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Guitar Solo)");
-		Message msg14 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Guitar Solo Continues)");
-		Message msg15 = new Message("Jesus", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Yo my bad je pensais qu'on faisait ca ya 3 jours");
-		
-		int numberMessages = 16;
-		
-		objectOutputStream.writeObject(numberMessages);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg1);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg2);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg3);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg4);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg5);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg6);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg7);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg8);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg9);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg10);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg11);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg12);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg13);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg14);
-		objectOutputStream.flush();
-		objectOutputStream.writeObject(msg15);
-		objectOutputStream.flush();
-		
-		objectOutputStream.close();
-		
-	}
 
-	private static void importUsers() throws IOException, ClassNotFoundException {
+	// Imports Data from a given Serialized file and transfers it into an arrayList
+	// of type T
+	private static <T> ArrayList<T> importData(String file, ArrayList<T> list)
+			throws IOException, ClassNotFoundException {
 		// Initialize streams
-		FileInputStream fileInputStream = new FileInputStream("users.txt");
+		FileInputStream fileInputStream = new FileInputStream(file);
 		ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
-		// Import the number of users
-		int userNumber = (Integer) objectInputStream.readObject();
-		// Import Users
-		userInformation = new ArrayList<User>();
+		// Import the number of objects
+		int dataQuantity = (Integer) objectInputStream.readObject();
+		// Import Data
+		list = new ArrayList<T>();
 		try {
-			for (int i = 0; i < userNumber; i++) {
-				User user = (User) objectInputStream.readObject();
-				userInformation.add(user);
+			for (int i = 0; i < dataQuantity; i++) {
+				T type = (T) objectInputStream.readObject();
+				list.add(type);
 			}
 		} catch (EOFException e) {
 			System.out.println("Somehow reached the end of users.txt...");
 		}
-
 		objectInputStream.close();
+		return list;
 	}
 
-	//Message builder
+	// Message builder
 	private static class Message implements Serializable {
 
 		private String username;
@@ -192,7 +141,7 @@ public class Server {
 			this.clientID = clientID;
 		}
 	}
-	
+
 	// ClientHandler to take care of each individual client
 	private static class ClientHandler extends Thread {
 
@@ -218,7 +167,7 @@ public class Server {
 		}
 
 		private boolean verifyCredentials() {
-			// Verify Username and Password
+			// TODO Verify Username and Password
 			return true;
 		}
 
