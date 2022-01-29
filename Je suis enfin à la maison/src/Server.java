@@ -65,6 +65,10 @@ public class Server {
 		Message msg14 = new Message("Joe", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "(Guitar Solo Continues)");
 		Message msg15 = new Message("Jesus", "192.168.2.15", "5000", LocalDate.now(), LocalTime.now(), "Yo my bad je pensais qu'on faisait ca ya 3 jours");
 		
+		int numberMessages = 16;
+		
+		objectOutputStream.writeObject(numberMessages);
+		objectOutputStream.flush();
 		objectOutputStream.writeObject(msg);
 		objectOutputStream.flush();
 		objectOutputStream.writeObject(msg1);
