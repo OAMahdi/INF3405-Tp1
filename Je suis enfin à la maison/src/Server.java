@@ -29,23 +29,13 @@ public class Server {
 
 		// Initial Server Message
 		System.out.format("The Server is running on %s:%d%n", serverAdress, serverPort);
-		
-		for (User x: userInformation) {
-			System.out.println(x.getUsername());
-		}
-		for (Message x: messageHistory) {
-			System.out.println(x);
-		}
 
 		try {
 			// Accept Clients
 			clientList = new ArrayList<ClientHandler>();
-			while (true) {
 				ClientHandler client = new ClientHandler(listener.accept(), clientNumber++);
-				if (client.verifyCredentials()) {
-					clientList.add(client);
-				}
-			}
+				client.start();
+			
 
 		} finally {
 			listener.close();
@@ -53,6 +43,8 @@ public class Server {
 
 	}
 
+	// Exports Data from a given arrayList and transfers it into an Serialized file
+	// of type T
 	private static void createTestFiles() throws Exception{
 		//Users
 		// Initialize streams
@@ -316,6 +308,9 @@ public class Server {
 		public void start() {
 			try {
 				// TODO Give the client the 15 latest messages
+				for (int i=messageHistory.size() - 1; i > messageHistory.size() - 16 ; i-- ) {
+					outputStream.writeUTF(messageHistory.get(i).toString());
+				}
 				outputStream.writeUTF("Hello from server - you are client#" + clientNumber);
 			} catch (IOException e) {
 				System.out.println("Error Handling client# " + clientNumber + ": " + e);
