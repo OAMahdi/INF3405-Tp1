@@ -14,10 +14,11 @@ public class Server {
 
 	public static void main(String[] args) throws Exception {
 
+		createTestFiles();
 		userInformation = importData("users.txt", userInformation);
 		messageHistory = importData("historic.txt", messageHistory);
 		// Socket information
-		String serverAdress = "192.168.2.15";
+		String serverAdress = "127.0.0.1";
 		int serverPort = 5000;
 
 		// Initialize Server Socket
@@ -28,11 +29,11 @@ public class Server {
 
 		// Initial Server Message
 		System.out.format("The Server is running on %s:%d%n", serverAdress, serverPort);
-
-		for (User x : userInformation) {
-			System.out.println(x.username);
+		
+		for (User x: userInformation) {
+			System.out.println(x.getUsername());
 		}
-		for (Message x : messageHistory) {
+		for (Message x: messageHistory) {
 			System.out.println(x);
 		}
 
@@ -52,6 +53,135 @@ public class Server {
 
 	}
 
+	private static void createTestFiles() throws Exception{
+		//Users
+		// Initialize streams
+		FileOutputStream fileOutputStream = new FileOutputStream("users.txt");
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+
+		User user = new User("Jesus", "Jesus");
+		User user1 = new User("admin", "password");
+		User user2= new User("Joe", "who");
+		User user3 = new User("Bob", "burger");
+
+		objectOutputStream.writeObject(4);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user1);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user2);
+		objectOutputStream.flush();
+		objectOutputStream.writeObject(user3);
+		objectOutputStream.flush();
+		
+		
+		//Messages
+		// Initialize streams
+		FileOutputStream fileOutputStream1 = new FileOutputStream("historic.txt");
+		ObjectOutputStream objectOutputStream1 = new ObjectOutputStream(fileOutputStream1);
+	    Message msg = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg1 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg2 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg3 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg4 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg5 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg6 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg7 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg8 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg9 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg10 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg11 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg12 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg13 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg14 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg15 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg16 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg17 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg18 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg19 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg20 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    Message msg21 = new Message("Joe", "127.0.0.1", "5000", LocalDate.now(), LocalTime.now(), "test");
+	    
+	    objectOutputStream1.writeObject(22);
+	    objectOutputStream1.flush();
+	    objectOutputStream1.writeObject(msg);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg1);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg2);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg3);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg4);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg5);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg6);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg7);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg8);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg9);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg10);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg11);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg12);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg13);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg14);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg15);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg16);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg17);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg18);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg19);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg20);
+		objectOutputStream1.flush();
+		objectOutputStream1.writeObject(msg21);
+		objectOutputStream1.flush();
+
+		objectOutputStream.close();
+		objectOutputStream1.close();
+		
+	    
+	}
+	
+	// Imports Data from a given Serialized file and transfers it into an arrayList
+	// of type T
+	private static <T> ArrayList<T> exportData(String file, ArrayList<T> list)
+			throws IOException, ClassNotFoundException {
+		// Initialize streams
+		FileOutputStream fileOutputStream = new FileOutputStream(file);
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
+		
+		// Export the number of objects
+		int dataQuantity = list.size();
+		// Export Data
+		try {
+			objectOutputStream.writeObject(dataQuantity);
+			objectOutputStream.flush();
+			for (int i = 0; i < dataQuantity; i++) {
+				objectOutputStream.writeObject(list.get(i));
+				objectOutputStream.flush();
+			}
+		} catch (EOFException e) {
+			System.out.println("Something went wrong");
+		}
+		
+		objectOutputStream.close();
+		return list;
+	}
+	
 	// Imports Data from a given Serialized file and transfers it into an arrayList
 	// of type T
 	private static <T> ArrayList<T> importData(String file, ArrayList<T> list)
@@ -108,12 +238,11 @@ public class Server {
 
 		private String username;
 		private String password;
-		private int clientID;
 
-		public User(String username, String password, int clientID) {
+
+		public User(String username, String password) {
 			this.username = username;
 			this.password = password;
-			this.clientID = clientID;
 		}
 
 		// Getters and setters
@@ -125,10 +254,6 @@ public class Server {
 			return username;
 		}
 
-		public int getClientID() {
-			return clientID;
-		}
-
 		public void setPassword(String password) {
 			this.password = password;
 		}
@@ -137,9 +262,6 @@ public class Server {
 			this.username = username;
 		}
 
-		public void setClientID(int clientID) {
-			this.clientID = clientID;
-		}
 	}
 
 	// ClientHandler to take care of each individual client
@@ -167,7 +289,26 @@ public class Server {
 		}
 
 		private boolean verifyCredentials() {
-			// TODO Verify Username and Password
+			try {
+				String[] credentials =  inputStream.readUTF().split(" ");
+				
+				//Find username
+				for (User x: userInformation) {
+					if (x.getUsername().equals(credentials[0])) {
+						//Verify Password
+						return x.getPassword().equals(credentials[1]);
+					}
+				}
+				
+				//Create User
+				User user = new User(credentials[0], credentials[1]);
+				userInformation.add(user);
+				
+			} catch (IOException e) {
+				System.out.println(e.getMessage());
+				return false;
+			}
+			
 			return true;
 		}
 
