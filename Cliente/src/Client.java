@@ -11,8 +11,10 @@ public class Client {
 	
 	public static void main(String[] args) throws Exception {
 		// TODO Auto-generated method stub
+		serverAddress = "127.0.0.1";
+		port = 5000;
 		
-		socket = new Socket("255.255.255.255", 1000);
+		socket = new Socket(serverAddress, port);
 		
 		System.out.format("The server is running on %s:%d%n", serverAddress, port);
 		
@@ -99,6 +101,30 @@ public class Client {
 		
 	}
 
+	private static void takeUserInformation() {
+		
+	}
+	
+	private static void testConnection() {
+		boolean validConnection = false;
+		
+		try {
+			socket = new Socket(serverAddress, port);
+		} catch (BindException e) {
+			System.out.println("Could not connect to server " + serverAddress + ":" + port);
+			System.out.println("Please try again.");
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
+		
+		if (validConnection) {
+			takeServerInformation();
+		} else {
+			takeUserInformation();
+		}
 
+	}
+	
+	
 
 }
