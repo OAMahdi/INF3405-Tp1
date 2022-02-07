@@ -32,7 +32,7 @@ public class Server {
 
 		try {
 			// Accept Clients
-			clientList = new ArrayList<ClientHandler>();
+			    clientList = new ArrayList<ClientHandler>();
 				ClientHandler client = new ClientHandler(listener.accept(), clientNumber++);
 				client.start();
 			
@@ -282,7 +282,12 @@ public class Server {
 
 		private boolean verifyCredentials() {
 			try {
-				String[] credentials =  inputStream.readUTF().split(" ");
+				//Initialize
+				String[] credentials =  new String[2];
+				
+				//Take Username and Password
+				credentials[0] = inputStream.readUTF();
+				credentials[1] = inputStream.readUTF();
 				
 				//Find username
 				for (User x: userInformation) {
@@ -304,14 +309,15 @@ public class Server {
 			return true;
 		}
 
-		// Say a welcome message to the client
-		public void start() {
+		private void sendMessageHistory() {
 			try {
-				// TODO Give the client the 15 latest messages
+				//Give the client the 15 latest messages or the amount of messages
+				int numberIterations = Math.max(messageHistory.size() - 15, 0);
+				
 				for (int i=messageHistory.size() - 1; i > messageHistory.size() - 16 ; i-- ) {
 					outputStream.writeUTF(messageHistory.get(i).toString());
 				}
-				outputStream.writeUTF("Hello from server - you are client#" + clientNumber);
+				
 			} catch (IOException e) {
 				System.out.println("Error Handling client# " + clientNumber + ": " + e);
 			} finally {
@@ -324,6 +330,25 @@ public class Server {
 				}
 			}
 		}
+		
+		// Say a welcome message to the client
+		public void run() {
+			
+			try {
+				while (!verifyCredentials()) {
+					outputStream.writeBoolean(false);
+				}
+				outputStream.writeBoolean(true);
+
+				sendMessageHistory();
+				outputStream.writeUTF("Hello from server - you are client#" + clientNumber);
+			} catch (IOException e) {
+				
+			}
+
+		}
+		
+		
 	}
 
 }
