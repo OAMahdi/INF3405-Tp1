@@ -10,19 +10,26 @@ public class Client {
 	private static int port; //5000
 	
 	public static void main(String[] args) throws Exception {
-		// TODO Auto-generated method stub
-		serverAddress = "127.0.0.1";
-		port = 5000;
 		
-		socket = new Socket(serverAddress, port);
-		
-		System.out.format("The server is running on %s:%d%n", serverAddress, port);
-		
+		//Connect to Server
+		do {
+			takeServerInformation();	
+		} while (!testConnection());
+
+		//Initialize Streams
 		DataInputStream in = new DataInputStream(socket.getInputStream()); //ce que le socket li
 		DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
+		
+		//Take User Information
+		String username = takeUserUsername();
+		String password = takeUserPassword();
+		
+		//Send User information to server
+		out.writeUTF(username);
+		out.writeUTF(password);
+		
 		//Accepter 16 messages
-		for (int i=0; i < 16; i++) {
+		for (int i=0; i < 3; i++) {
 			System.out.println(in.readUTF());
 		}
 		
@@ -35,7 +42,7 @@ public class Client {
 		//Initialize 
 		Scanner scanner = new Scanner(System.in);
 		boolean validData = false;
-		String[] ipString;
+		String[] ipString = {"Allo"};
 		Integer[] ipInteger = new Integer[4];
 		
 		//Take Valid Server Address
@@ -43,11 +50,12 @@ public class Client {
 			validData = true;
 			
 			//Display Message
-			System.out.print("Enter server adress: ");
+			System.out.print("Enter server address: ");
 			
 			//Take server ip
 			serverAddress = scanner.nextLine();
-			ipString = serverAddress.split(".");
+			ipString = serverAddress.split("[.]", 0);
+			System.out.println();
 			
 			//Test 1: ip address has too many .
 			if (ipString.length != 4) {
@@ -86,6 +94,7 @@ public class Client {
 			//Take server port and Test 1: port is not a number
 			try {
 				port = Integer.parseInt(scanner.nextLine());
+				System.out.println();
 			} catch (NumberFormatException e) {
 				validData = false;
 			}
@@ -101,15 +110,52 @@ public class Client {
 		
 	}
 
-	private static void takeUserInformation() {
+	private static String takeUserPassword() {
+		//Initialize 
+		boolean notValid = true;
+		Scanner scanner = new Scanner(System.in);
+		String password = null;
 		
+		while(notValid) {
+			//Display Message
+			System.out.print("Enter password: ");
+			
+			//Take username ip
+			password = scanner.nextLine();
+			System.out.println();
+			
+			notValid = password == null;
+		}
+		
+		return password;
 	}
 	
-	private static void testConnection() {
-		boolean validConnection = false;
+	private static String takeUserUsername() {
+		//Initialize 
+		boolean notValid = true;
+		Scanner scanner = new Scanner(System.in);
+		String username = null;
 		
+		while(notValid) {
+			//Display Message
+			System.out.print("Enter username: ");
+					
+			//Take password ip
+			username = scanner.nextLine();
+			System.out.println();
+			
+			notValid = username == null;
+			System.out.println("USERNAME:" + username);
+		}
+		
+		return username;
+	}
+	
+	private static boolean testConnection() {
 		try {
 			socket = new Socket(serverAddress, port);
+			System.out.format("The server is running on %s:%d%n", serverAddress, port);
+			return true;
 		} catch (BindException e) {
 			System.out.println("Could not connect to server " + serverAddress + ":" + port);
 			System.out.println("Please try again.");
@@ -117,14 +163,7 @@ public class Client {
 			System.out.println(e.getMessage());
 		}
 		
-		if (validConnection) {
-			takeServerInformation();
-		} else {
-			takeUserInformation();
-		}
-
+		return false;
 	}
 	
-	
-
 }
