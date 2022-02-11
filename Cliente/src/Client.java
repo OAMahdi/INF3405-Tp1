@@ -8,7 +8,9 @@ public class Client {
 	private static Socket socket;
 	private static String serverAddress = "127.0.0.1"; // "127.0.0.1"
 	private static int port = 5000; // 5000
-
+	private static DataInputStream in;
+	private static DataOutputStream out;
+	
 	public static void main(String[] args) throws Exception {
 
 		// Connect to Server
@@ -17,8 +19,8 @@ public class Client {
 		} while (!testConnection());
 
 		// Initialize Streams
-		DataInputStream in = new DataInputStream(socket.getInputStream()); // ce que le socket li
-		DataOutputStream out = new DataOutputStream(socket.getOutputStream());
+		in = new DataInputStream(socket.getInputStream()); // ce que le socket li
+		out = new DataOutputStream(socket.getOutputStream());
 		
 		// Send User information to server
 		out.writeUTF(takeUserUsername());
@@ -29,11 +31,9 @@ public class Client {
 			out.writeUTF(takeUserPassword());
 		}
 		
-		in.close();
-		out.close();
 		//new WritingThread(out).start();
-		System.out.println("Socket is +" + socket.isClosed());
-		new Thread(new ReadingThread(socket)).start();
+		new Thread(new ReadingThread()).start();
+		new Thread(new WritingThread()).start();
 		
 		/*// Accepter 16 messages
 		try {
@@ -188,10 +188,9 @@ public class Client {
 	}
 
 	static class WritingThread implements Runnable {
-		private DataOutputStream stream;
 
-		public WritingThread(DataOutputStream stream) {
-			this.stream = stream;
+		public WritingThread() {
+
 		}
 
 		@Override
@@ -199,10 +198,14 @@ public class Client {
 			Scanner scanner = new Scanner(System.in);
 			
 			while (true) {
-				
 				String message = scanner.nextLine();
 				try {
-					stream.writeUTF(message);
+					if (message.length() <= 200) {
+						out.writeUTF(message);
+					} else {
+						out.writeUTF(message.substring(0, 199));
+					}
+
 				} catch (IOException e) {
 				}
 				
@@ -211,30 +214,19 @@ public class Client {
 	}
 
 	static class ReadingThread implements Runnable {
-		private Socket socket;
-		private DataInputStream input;
-		private DataOutputStream output;
 
-		public ReadingThread(Socket socket) {
-			this.socket = socket;
-			try {
-				System.out.println(socket.isClosed());
-				input = new DataInputStream(socket.getInputStream());
-				output = new DataOutputStream(socket.getOutputStream());
-			} catch (IOException e) {
-				System.out.println(e);
-			}
-			System.out.println("allo, j'existe.");
+		public ReadingThread() {
+			
 		}
 
 		@Override
 		public void run() {
 			while (true) {
 			try {
-				String message = input.readUTF();
+				String message = in.readUTF();
 				while (message != null) {
 					System.out.println(message);
-					message = input.readUTF();
+					message = in.readUTF();
 				}
 			} catch (IOException e) {
 				

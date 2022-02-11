@@ -10,16 +10,14 @@ public class Server {
 	private static ArrayList<ClientHandler> clientList;
 	private static ArrayList<User> userInformation;
 	private static ArrayList<Message> messageHistory;
-	private static int clientNumber;
 	private static String serverAddress = "127.0.0.1";
 	private static int serverPort = 5000;
 
 	public static void main(String[] args) throws Exception {
 
-		createTestFiles();
+		//createTestFiles();
 		userInformation = importData("users.txt", userInformation);
 		messageHistory = importData("historic.txt", messageHistory);
-		clientNumber = userInformation.size();
 
 		// Initialize Server Socket
 		listener = new ServerSocket();
@@ -29,8 +27,24 @@ public class Server {
 
 		// Initial Server Message
 		System.out.format("The Server is running on %s:%d%n", serverAddress, serverPort);
-
+		
+		//Thread to close the server
+		Thread closeCommandThread = new Thread() {
+			@Override
+			public void run() {
+				Scanner scanner = new Scanner(System.in);
+				while (true) {
+					try {
+						if (scanner.nextLine().equals("/close")) closeServer();
+					} catch (Exception e) {
+						System.out.println(e);
+					}
+				}
+			}
+		};
+		
 		try {
+			closeCommandThread.start();
 			// Accept Clients
 			clientList = new ArrayList<ClientHandler>();
 			while (true) {
@@ -39,15 +53,23 @@ public class Server {
 				client.start();
 			}
 
-		} finally {
-			listener.close();
+		} catch (SocketException e) {
+			System.out.println("Server is closed.");
 		}
 
 	}
 
-	private static void notifyClients(Message message, ClientHandler sender) {
+	private static void closeServer() throws IOException, ClassNotFoundException {
+		Message consoleMessage = new Message("SERVER", serverAddress, Integer.toString(serverPort), "Server is now closed. Goodbye.");
+		notifyClients(consoleMessage);
+		listener.close();
+		exportData("users.txt", userInformation);
+		exportData("historic.txt", messageHistory);
+		System.exit(1);
+	}
+	
+	private static void notifyClients(Message message) {
 		for (ClientHandler client : clientList) {
-			if (!sender.equals(client))
 				client.broadcast(message);
 		}
 	}
@@ -323,7 +345,7 @@ public class Server {
 				}
 
 				// Create User
-				User user = new User(credentials[0], credentials[1], clientNumber++);
+				User user = new User(credentials[0], credentials[1], userInformation.size());
 				userInformation.add(user);
 				this.clientNumber = user.getUserId();
 
@@ -347,11 +369,10 @@ public class Server {
 		private void sendMessageHistory() {
 			try {
 				// Give the client the 15 latest messages or the amount of messages
-				int numberIterations = Math.max(messageHistory.size() - 15, 0);
+				int initialPosition = Math.max(messageHistory.size() - 15, 0);
 
-				for (int i = messageHistory.size() - 1; i >= numberIterations; i--) {
+				for (int i = initialPosition; i < messageHistory.size(); i++) {
 					outputStream.writeUTF(messageHistory.get(i).toString());
-					System.out.println("1");
 				}
 
 			} catch (IOException e) {
@@ -380,7 +401,8 @@ public class Server {
 					String messageString = inputStream.readUTF();
 					Message message = new Message(userInformation.get(this.clientNumber).getUsername(), serverAddress,
 							Integer.toString(serverPort), messageString);
-					notifyClients(message, this);
+					messageHistory.add(message);
+					notifyClients(message);
 				} catch (IOException e) {
 
 				}
