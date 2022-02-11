@@ -44,10 +44,11 @@ public class Server {
 		}
 
 	}
-	
+
 	private static void notifyClients(Message message, ClientHandler sender) {
-		for (ClientHandler client: clientList) {
-			if (!sender.equals(client)) client.broadcast(message);
+		for (ClientHandler client : clientList) {
+			if (!sender.equals(client))
+				client.broadcast(message);
 		}
 	}
 
@@ -231,6 +232,7 @@ public class Server {
 			this.time = LocalTime.now();
 			this.msg = msg;
 		}
+
 		@Override
 		public String toString() {
 			// TODO Auto-generated method stub
@@ -260,7 +262,7 @@ public class Server {
 		public String getUsername() {
 			return username;
 		}
-		
+
 		public int getUserId() {
 			return userId;
 		}
@@ -272,7 +274,7 @@ public class Server {
 		public void setUsername(String username) {
 			this.username = username;
 		}
-		
+
 		public void setUserId(int userId) {
 			this.userId = userId;
 		}
@@ -338,7 +340,6 @@ public class Server {
 				outputStream.writeBoolean(false);
 			}
 			outputStream.writeBoolean(true);
-
 			sendMessageHistory();
 			outputStream.writeUTF("Hello from server - you are client#" + clientNumber);
 		}
@@ -350,6 +351,7 @@ public class Server {
 
 				for (int i = messageHistory.size() - 1; i >= numberIterations; i--) {
 					outputStream.writeUTF(messageHistory.get(i).toString());
+					System.out.println("1");
 				}
 
 			} catch (IOException e) {
@@ -363,26 +365,23 @@ public class Server {
 			} catch (IOException e) {
 				System.out.println("Could not send message : " + message + "to client#" + clientNumber);
 			}
-
 		}
-		
+
 		// Say a welcome message to the client
 		public void run() {
 
 			try {
 				initialConnection();
-				
-				while (true) {
-					String messageString = inputStream.readUTF();
-					Message message = new Message(userInformation.get(this.clientNumber).getUsername(), serverAddress, Integer.toString(serverPort), messageString);
-					notifyClients(message, this);
-				}
- 			} catch (IOException e) {
+			} catch (IOException e) {
 
-			} finally {
+			}
+			while (true) {
 				try {
-					socket.close();
-				} catch (Exception e) {
+					String messageString = inputStream.readUTF();
+					Message message = new Message(userInformation.get(this.clientNumber).getUsername(), serverAddress,
+							Integer.toString(serverPort), messageString);
+					notifyClients(message, this);
+				} catch (IOException e) {
 
 				}
 			}

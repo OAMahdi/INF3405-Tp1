@@ -19,7 +19,7 @@ public class Client {
 		// Initialize Streams
 		DataInputStream in = new DataInputStream(socket.getInputStream()); // ce que le socket li
 		DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-
+		
 		// Send User information to server
 		out.writeUTF(takeUserUsername());
 		out.writeUTF(takeUserPassword());
@@ -28,21 +28,31 @@ public class Client {
 			out.writeUTF(takeUserUsername());
 			out.writeUTF(takeUserPassword());
 		}
-
-		// Accepter 16 messages
+		
+		in.close();
+		out.close();
+		//new WritingThread(out).start();
+		System.out.println("Socket is +" + socket.isClosed());
+		new Thread(new ReadingThread(socket)).start();
+		
+		/*// Accepter 16 messages
 		try {
 			for (int i = 0; i < 16; i++) {
 				System.out.println(in.readUTF());
 			}
 		} catch (EOFException e) {
 			System.out.println("it happened.");
-		}
-		
-		// Ecrire 
+		} */
 
-		socket.close();
+		// Ecrire
+		while (true);
+		
 	}
 
+	private static void IHopeThisDoesntWork(DataInputStream stream) throws IOException{
+		System.out.println(stream.readUTF());
+	}
+	
 	// Take the server information
 	private static void takeServerInformation() {
 
@@ -133,7 +143,8 @@ public class Client {
 
 			notValid = password == "";
 			// Display Error Message
-			if (notValid) System.out.println("Invalid Password.");
+			if (notValid)
+				System.out.println("Invalid Password.");
 		}
 
 		return password;
@@ -154,7 +165,8 @@ public class Client {
 
 			notValid = username == "";
 			// Display Error Message
-			if (notValid) System.out.println("Invalid Username.");
+			if (notValid)
+				System.out.println("Invalid Username.");
 		}
 
 		return username;
@@ -175,11 +187,60 @@ public class Client {
 		return false;
 	}
 
-	class WritingThread extends Thread {
-		
+	static class WritingThread implements Runnable {
+		private DataOutputStream stream;
+
+		public WritingThread(DataOutputStream stream) {
+			this.stream = stream;
+		}
+
+		@Override
+		public void run() {
+			Scanner scanner = new Scanner(System.in);
+			
+			while (true) {
+				
+				String message = scanner.nextLine();
+				try {
+					stream.writeUTF(message);
+				} catch (IOException e) {
+				}
+				
+			}
+		}
 	}
-	
-	class ReadingThread extends Thread {
-		
+
+	static class ReadingThread implements Runnable {
+		private Socket socket;
+		private DataInputStream input;
+		private DataOutputStream output;
+
+		public ReadingThread(Socket socket) {
+			this.socket = socket;
+			try {
+				System.out.println(socket.isClosed());
+				input = new DataInputStream(socket.getInputStream());
+				output = new DataOutputStream(socket.getOutputStream());
+			} catch (IOException e) {
+				System.out.println(e);
+			}
+			System.out.println("allo, j'existe.");
+		}
+
+		@Override
+		public void run() {
+			while (true) {
+			try {
+				String message = input.readUTF();
+				while (message != null) {
+					System.out.println(message);
+					message = input.readUTF();
+				}
+			} catch (IOException e) {
+				
+			}	
+			}
+		}
+		}
 	}
-}
+
